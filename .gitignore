@@ -1,0 +1,13 @@
+# Composer
+/vendor/
+composer.lock
+
+# Build artifacts
+/dist/
+/*.zip
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.log

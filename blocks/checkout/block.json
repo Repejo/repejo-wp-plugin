@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "repejo/checkout",
+	"version": "0.1.0",
+	"title": "Repejo Checkout",
+	"category": "embed",
+	"icon": "money-alt",
+	"description": "Renderar Repejo-checkouten. Givar-id hämtas från den fina URL:en (/sida/<id>).",
+	"textdomain": "repejo-wp-plugin",
+	"attributes": {
+		"id": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"multiple": false
+	},
+	"editorScript": "file:./index.js"
+}

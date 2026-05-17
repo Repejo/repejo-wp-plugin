@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v2
+
+      - name: Install runtime dependencies (incl. Plugin Update Checker)
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Build distributable zip
+        run: |
+          set -euo pipefail
+          SLUG=repejo-wp-plugin
+          STAGE="$RUNNER_TEMP/$SLUG"
+          mkdir -p "$STAGE"
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.gitignore' \
+            --exclude 'dist' \
+            --exclude '*.zip' \
+            --exclude 'composer.json' \
+            --exclude 'composer.lock' \
+            ./ "$STAGE/"
+          mkdir -p dist
+          ( cd "$RUNNER_TEMP" && zip -rq "$GITHUB_WORKSPACE/dist/$SLUG.zip" "$SLUG" )
+
+      - name: Publish GitHub Release with plugin asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/repejo-wp-plugin.zip
+          generate_release_notes: true

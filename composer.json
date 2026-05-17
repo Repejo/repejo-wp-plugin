@@ -1,0 +1,17 @@
+{
+	"name": "repejo/repejo-wp-plugin",
+	"description": "Pretty donor-id URLs and checkout embed for the Repejo checkout on WordPress sites.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=7.4",
+		"yahnis-elsts/plugin-update-checker": "^5.4"
+	},
+	"require-dev": {
+		"php-stubs/wordpress-stubs": "^6.4"
+	},
+	"config": {
+		"optimize-autoloader": true,
+		"sort-packages": true
+	}
+}
