@@ -2,7 +2,7 @@
 /**
  * Stops WordPress' canonical redirect from "correcting" a
  * `/<page>/<donor-id>` URL back to the bare page (which would throw away the
- * donor id before our embed sees it).
+ * donor id before it reaches the <head> meta tag).
  *
  * Scoped precisely: it only disengages when our own query var is present,
  * i.e. when one of our rewrite rules actually matched. Canonical redirects on

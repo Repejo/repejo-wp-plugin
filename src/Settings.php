@@ -2,10 +2,10 @@
 /**
  * Settings storage and the admin settings screen.
  *
- * The embed base URL is intentionally required and not hardcoded: the actual
- * Repejo checkout embed contract is owned by Repejo and provided per
- * deployment, so it is configured here (or overridden via the
- * `repejo_wp_plugin_embed_html` filter) rather than guessed.
+ * Scope is intentionally tiny: the plugin only exposes the donor id, it does
+ * not render the checkout. So all that is configurable is the id URL pattern,
+ * the <meta> name the front-end component reads, and the legacy query
+ * parameter to fall back to.
  *
  * @package Repejo\WpPlugin
  */
@@ -37,22 +37,25 @@ final class Settings {
 			$this->cache = wp_parse_args(
 				is_array( $stored ) ? $stored : array(),
 				array(
-					'embed_base_url' => '',
-					'target_param'   => 'rp_hrid',
-					'id_pattern'     => '[A-Za-z0-9_-]+',
-					'iframe_height'  => '800',
+					'meta_name'    => 'repejo-donor-id',
+					'source_param' => 'rp_hrid',
+					'id_pattern'   => '[A-Za-z0-9_-]+',
 				)
 			);
 		}
 		return $this->cache;
 	}
 
-	public function embed_base_url(): string {
-		return $this->all()['embed_base_url'];
+	/** The <meta name="..."> the front-end component reads the id from. */
+	public function meta_name(): string {
+		$name = trim( $this->all()['meta_name'] );
+		return '' === $name ? 'repejo-donor-id' : $name;
 	}
 
-	public function target_param(): string {
-		return $this->all()['target_param'] ?: 'rp_hrid';
+	/** Legacy query parameter to fall back to (the old ?rp_hrid= links). */
+	public function source_param(): string {
+		$param = $this->all()['source_param'];
+		return '' === $param ? 'rp_hrid' : $param;
 	}
 
 	/**
@@ -62,10 +65,6 @@ final class Settings {
 	public function id_regex(): string {
 		$pattern = trim( $this->all()['id_pattern'] );
 		return '' === $pattern ? '[A-Za-z0-9_-]+' : $pattern;
-	}
-
-	public function iframe_height(): int {
-		return max( 1, (int) $this->all()['iframe_height'] );
 	}
 
 	public function register_settings(): void {
@@ -88,10 +87,9 @@ final class Settings {
 		$input = is_array( $input ) ? $input : array();
 
 		return array(
-			'embed_base_url' => isset( $input['embed_base_url'] ) ? esc_url_raw( trim( (string) $input['embed_base_url'] ) ) : '',
-			'target_param'   => isset( $input['target_param'] ) ? sanitize_key( $input['target_param'] ) : 'rp_hrid',
-			'id_pattern'     => isset( $input['id_pattern'] ) ? trim( (string) $input['id_pattern'] ) : '[A-Za-z0-9_-]+',
-			'iframe_height'  => isset( $input['iframe_height'] ) ? (string) absint( $input['iframe_height'] ) : '800',
+			'meta_name'    => isset( $input['meta_name'] ) ? sanitize_text_field( trim( (string) $input['meta_name'] ) ) : 'repejo-donor-id',
+			'source_param' => isset( $input['source_param'] ) ? sanitize_key( $input['source_param'] ) : 'rp_hrid',
+			'id_pattern'   => isset( $input['id_pattern'] ) ? trim( (string) $input['id_pattern'] ) : '[A-Za-z0-9_-]+',
 		);
 	}
 
@@ -113,33 +111,41 @@ final class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Repejo WP Plugin', 'repejo-wp-plugin' ); ?></h1>
+			<p>
+				<?php esc_html_e( 'Detta tillägg renderar ingen checkout. Det gör bara att adresser av typen /sida/<id> fungerar och lägger id:t i sidans <head> så att er Repejo-komponent kan läsa det.', 'repejo-wp-plugin' ); ?>
+			</p>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'repejo_wp_plugin' ); ?>
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row">
-							<label for="repejo_embed_base_url"><?php esc_html_e( 'Embed-URL för checkouten', 'repejo-wp-plugin' ); ?></label>
+							<label for="repejo_meta_name"><?php esc_html_e( 'Meta-namn (komponenten läser detta)', 'repejo-wp-plugin' ); ?></label>
 						</th>
 						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[embed_base_url]"
-								id="repejo_embed_base_url" type="url" class="regular-text code"
-								value="<?php echo esc_attr( $values['embed_base_url'] ); ?>"
-								placeholder="https://checkout.repejo.se/..." />
+							<input name="<?php echo esc_attr( self::OPTION ); ?>[meta_name]"
+								id="repejo_meta_name" type="text" class="regular-text code"
+								value="<?php echo esc_attr( $values['meta_name'] ); ?>" />
 							<p class="description">
-								<?php esc_html_e( 'Bas-URL till Repejo-checkouten. Givar-id:t läggs på som frågeparameter (se nedan). Lämnas tom = inget renderas.', 'repejo-wp-plugin' ); ?>
+								<?php
+								printf(
+									/* translators: %s: rendered meta tag example. */
+									esc_html__( 'Renderas som %s i sidans head. Måste matcha det er komponent letar efter.', 'repejo-wp-plugin' ),
+									'<code>&lt;meta name=&quot;' . esc_html( $values['meta_name'] ) . '&quot; content=&quot;&lt;id&gt;&quot;&gt;</code>'
+								);
+								?>
 							</p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row">
-							<label for="repejo_target_param"><?php esc_html_e( 'Parameternamn för id', 'repejo-wp-plugin' ); ?></label>
+							<label for="repejo_source_param"><?php esc_html_e( 'Äldre frågeparameter (bakåtkompatibilitet)', 'repejo-wp-plugin' ); ?></label>
 						</th>
 						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[target_param]"
-								id="repejo_target_param" type="text" class="regular-text code"
-								value="<?php echo esc_attr( $values['target_param'] ); ?>" />
+							<input name="<?php echo esc_attr( self::OPTION ); ?>[source_param]"
+								id="repejo_source_param" type="text" class="regular-text code"
+								value="<?php echo esc_attr( $values['source_param'] ); ?>" />
 							<p class="description">
-								<?php esc_html_e( 'Den parameter Repejo-backend redan förstår. Standard: rp_hrid.', 'repejo-wp-plugin' ); ?>
+								<?php esc_html_e( 'Om någon besöker den gamla ?rp_hrid=...-länken läses id:t även därifrån. Standard: rp_hrid.', 'repejo-wp-plugin' ); ?>
 							</p>
 						</td>
 					</tr>
@@ -154,16 +160,6 @@ final class Settings {
 							<p class="description">
 								<?php esc_html_e( 'Standard [A-Za-z0-9_-]+ (alfanumeriskt). Snävare mönster minskar risken att riktiga undersidor skuggas.', 'repejo-wp-plugin' ); ?>
 							</p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row">
-							<label for="repejo_iframe_height"><?php esc_html_e( 'iframe-höjd (px)', 'repejo-wp-plugin' ); ?></label>
-						</th>
-						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[iframe_height]"
-								id="repejo_iframe_height" type="number" min="1" class="small-text"
-								value="<?php echo esc_attr( $values['iframe_height'] ); ?>" />
 						</td>
 					</tr>
 				</table>

@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Repejo WP Plugin
  * Plugin URI:        https://github.com/Repejo/repejo-wp-plugin
- * Description:        Gör att Repejo-checkouten kan länkas med givar-id direkt i adressen (t.ex. /signera/abc-123) istället för som frågeparameter, och renderar checkouten via shortcode/block.
- * Version:           0.1.0
+ * Description:        Gör att Repejo-checkouten kan länkas med givar-id direkt i adressen (t.ex. /signera/abc-123) istället för som frågeparameter, och exponerar id:t i sidans <head> så att Repejo-komponenten kan läsa det.
+ * Version:           0.2.0
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Author:            Repejo
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // No direct access.
 }
 
-define( 'REPEJO_WP_PLUGIN_VERSION', '0.1.0' );
+define( 'REPEJO_WP_PLUGIN_VERSION', '0.2.0' );
 define( 'REPEJO_WP_PLUGIN_FILE', __FILE__ );
 define( 'REPEJO_WP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'REPEJO_WP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

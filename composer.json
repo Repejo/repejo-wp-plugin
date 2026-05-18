@@ -1,6 +1,6 @@
 {
 	"name": "repejo/repejo-wp-plugin",
-	"description": "Pretty donor-id URLs and checkout embed for the Repejo checkout on WordPress sites.",
+	"description": "Pretty donor-id URLs that resolve instead of 404 and expose the id in <head> for the Repejo checkout component on WordPress sites.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
 	"require": {

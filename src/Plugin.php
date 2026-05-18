@@ -30,7 +30,7 @@ final class Plugin {
 		( new Rewrite( $settings ) )->register();
 		( new PageSettings() )->register();
 		( new Canonical() )->register();
-		( new Embed( $settings ) )->register();
+		( new MetaTag( $settings ) )->register();
 		$settings->register();
 		( new Diagnostics( $settings ) )->register();
 		( new Updater() )->register();

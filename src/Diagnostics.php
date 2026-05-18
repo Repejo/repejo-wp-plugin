@@ -1,12 +1,11 @@
 <?php
 /**
- * Turns the three classic silent failure modes into visible wp-admin notices
- * so a non-technical client sees the problem here instead of via a broken
- * donor flow:
+ * Turns the classic silent failure modes into visible wp-admin notices so a
+ * non-technical client sees the problem here instead of via a broken donor
+ * flow:
  *
  *   1. Permalinks set to "Plain" — the rewrite engine never runs.
- *   2. Embed base URL not configured — nothing renders.
- *   3. An opted-in page has child pages — the (alphanumeric) rule can shadow
+ *   2. An opted-in page has child pages — the (alphanumeric) rule can shadow
  *      those real children.
  *
  * @package Repejo\WpPlugin
@@ -44,17 +43,6 @@ final class Diagnostics {
 					/* translators: %s: link to the Permalinks settings screen. */
 					__( 'Repejo: Permalänkar står på "Enkel". De fina länkarna (/sida/id) fungerar inte förrän du väljer en annan permalänkstruktur under %s.', 'repejo-wp-plugin' ),
 					'<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Inställningar → Permalänkar', 'repejo-wp-plugin' ) . '</a>'
-				)
-			);
-		}
-
-		if ( '' === $this->settings->embed_base_url() ) {
-			$this->notice(
-				'warning',
-				sprintf(
-					/* translators: %s: link to the plugin settings screen. */
-					__( 'Repejo: Embed-URL är inte konfigurerad. Checkouten renderas inte förrän du fyller i den under %s.', 'repejo-wp-plugin' ),
-					'<a href="' . esc_url( admin_url( 'options-general.php?page=repejo-wp-plugin' ) ) . '">' . esc_html__( 'Inställningar → Repejo', 'repejo-wp-plugin' ) . '</a>'
 				)
 			);
 		}
