@@ -12,7 +12,7 @@
  *
  * Contract for the front-end component:
  *
- *   <meta name="repejo-donor-id" content="<id>">
+ *   <meta name="repejo-telemarketing-id" content="<id>">
  *
  * (the name is configurable under Inställningar → Repejo).
  *

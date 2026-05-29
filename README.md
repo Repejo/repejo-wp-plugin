@@ -16,7 +16,7 @@ checkout** – det gör två saker:
    Repejo-komponent som redan finns på sidan kan läsa det:
 
    ```html
-   <meta name="repejo-donor-id" content="abc-123" />
+   <meta name="repejo-telemarketing-id" content="abc-123" />
    ```
 
 Den gamla `?rp_hrid=`-länken fortsätter fungera parallellt.
@@ -78,7 +78,7 @@ Repejo-komponent ligger kvar precis som tidigare.
 
 > **Avancerat (oftast inget du behöver röra):** Under **Inställningar →
 > Repejo** kan namnet på `<meta>`-taggen ändras. Standard är
-> `repejo-donor-id` och fungerar direkt om er komponent läser det namnet.
+> `repejo-telemarketing-id` och fungerar direkt om er komponent läser det namnet.
 
 ### Steg 5 – Testa att det fungerar
 
@@ -94,10 +94,10 @@ Kontrollera två saker:
    **fortfarande** `.../test-123` (den ska inte hoppa tillbaka och ta bort
    `test-123`).
 2. Högerklicka på sidan → **"Visa sidkälla"** och sök (Ctrl/Cmd+F) efter
-   `repejo-donor-id`. Du ska hitta:
+   `repejo-telemarketing-id`. Du ska hitta:
 
    ```html
-   <meta name="repejo-donor-id" content="test-123" />
+   <meta name="repejo-telemarketing-id" content="test-123" />
    ```
 
 Testa gärna även den gamla formen
@@ -136,19 +136,19 @@ När en aktiverad sida öppnas med ett id (antingen `/<sida>/<id>` eller den
 äldre `/<sida>?rp_hrid=<id>`) injiceras exakt:
 
 ```html
-<meta name="repejo-donor-id" content="<id>" />
+<meta name="repejo-telemarketing-id" content="<id>" />
 ```
 
 Komponenten läser det t.ex. så här:
 
 ```js
 const id = document
-  .querySelector('meta[name="repejo-donor-id"]')
+  .querySelector('meta[name="repejo-telemarketing-id"]')
   ?.getAttribute('content') || null;
 ```
 
 - `name` är konfigurerbart (**Inställningar → Repejo** → *Meta-namn*).
-  Standard: `repejo-donor-id`.
+  Standard: `repejo-telemarketing-id`.
 - Tillåtna tecken i `<id>` styrs av ett regex (standard `[A-Za-z0-9_-]+`).
 - Saknas id renderas ingen meta-tagg alls.
 
