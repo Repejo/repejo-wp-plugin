@@ -11,3 +11,6 @@ composer.lock
 .idea/
 .vscode/
 *.log
+
+# Local environment overrides (keep real secrets out of the repo)
+.env

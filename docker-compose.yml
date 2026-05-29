@@ -1,0 +1,62 @@
+# Local WordPress environment for testing the Repejo WP Plugin.
+#
+#   docker compose up -d          # start WordPress + MySQL
+#   docker compose run --rm setup # install WP, enable pretty links, activate plugin, seed a test page
+#   open http://localhost:8080
+#
+# WordPress runs at http://localhost:8080  (admin / admin at /wp-admin)
+# The plugin source is bind-mounted, so edits on disk are live immediately.
+
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:6.5-php8.2-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+    volumes:
+      - wp_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/repejo-wp-plugin
+
+  # One-shot provisioner. Run it after `up`; it exits when done.
+  setup:
+    image: wordpress:cli-php8.2
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/repejo-wp-plugin
+      - ./bin/wp-setup.sh:/wp-setup.sh:ro
+    entrypoint: ["bash", "/wp-setup.sh"]
+
+volumes:
+  db_data:
+  wp_data:
