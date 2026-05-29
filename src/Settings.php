@@ -37,7 +37,7 @@ final class Settings {
 			$this->cache = wp_parse_args(
 				is_array( $stored ) ? $stored : array(),
 				array(
-					'meta_name'    => 'repejo-donor-id',
+					'meta_name'    => 'repejo-telemarketing-id',
 					'source_param' => 'rp_hrid',
 					'id_pattern'   => '[A-Za-z0-9_-]+',
 				)
@@ -49,7 +49,7 @@ final class Settings {
 	/** The <meta name="..."> the front-end component reads the id from. */
 	public function meta_name(): string {
 		$name = trim( $this->all()['meta_name'] );
-		return '' === $name ? 'repejo-donor-id' : $name;
+		return '' === $name ? 'repejo-telemarketing-id' : $name;
 	}
 
 	/** Legacy query parameter to fall back to (the old ?rp_hrid= links). */
@@ -87,7 +87,7 @@ final class Settings {
 		$input = is_array( $input ) ? $input : array();
 
 		return array(
-			'meta_name'    => isset( $input['meta_name'] ) ? sanitize_text_field( trim( (string) $input['meta_name'] ) ) : 'repejo-donor-id',
+			'meta_name'    => isset( $input['meta_name'] ) ? sanitize_text_field( trim( (string) $input['meta_name'] ) ) : 'repejo-telemarketing-id',
 			'source_param' => isset( $input['source_param'] ) ? sanitize_key( $input['source_param'] ) : 'rp_hrid',
 			'id_pattern'   => isset( $input['id_pattern'] ) ? trim( (string) $input['id_pattern'] ) : '[A-Za-z0-9_-]+',
 		);

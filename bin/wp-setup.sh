@@ -66,7 +66,7 @@ cat <<EOF
     $SITE_URL/signera/abc-123
 
   Expect: page loads (no 404) and the <head> contains
-    <meta name="repejo-donor-id" content="abc-123">
+    <meta name="repejo-telemarketing-id" content="abc-123">
 
   Legacy query param still works:
     $SITE_URL/signera/?rp_hrid=abc-123
