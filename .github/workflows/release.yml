@@ -38,6 +38,9 @@ jobs:
             --exclude '*.zip' \
             --exclude 'composer.json' \
             --exclude 'composer.lock' \
+            --exclude 'docker-compose.yml' \
+            --exclude 'bin' \
+            --exclude '.env' \
             ./ "$STAGE/"
           mkdir -p dist
           ( cd "$RUNNER_TEMP" && zip -rq "$GITHUB_WORKSPACE/dist/$SLUG.zip" "$SLUG" )
